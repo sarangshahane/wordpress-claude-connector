@@ -1,0 +1,334 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>WordPress Claude Connector</title>
+  <style>
+    :root {
+      --bg: #f6f4fb;
+      --bg-gradient: radial-gradient(circle at top left, #ffffff 0, #f6f4fb 45%, #ece4ff 100%);
+      --card-bg: #ffffff;
+      --text-main: #1f1634;
+      --text-muted: #6c6485;
+      --border-subtle: #e0d9f5;
+      --accent: #7d4cff;
+      --accent-soft: rgba(125, 76, 255, 0.12);
+      --accent-strong: #5a35d8;
+      --error: #c94c4c;
+      --success: #1a7f5a;
+      --shadow-soft: 0 18px 45px rgba(14, 6, 40, 0.12);
+      --radius-card: 18px;
+      --radius-field: 10px;
+      --transition-fast: 160ms ease-out;
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 12px;
+      --spacing-lg: 18px;
+      --spacing-xl: 24px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, system-ui, -system-ui, BlinkMacSystemFont, "SF Pro Text",
+        "Segoe UI", sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-xl);
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 460px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      background: var(--card-bg);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow-soft);
+      padding: 24px 24px 22px;
+      position: relative;
+      overflow: hidden;
+      animation: cardEnter 280ms var(--transition-fast) both;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(125, 76, 255, 0.14), transparent 60%),
+        radial-gradient(circle at bottom right, rgba(18, 190, 210, 0.15), transparent 55%);
+      opacity: 0.38;
+      mix-blend-mode: screen;
+      pointer-events: none;
+    }
+
+    .card-inner {
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-header {
+      margin-bottom: var(--spacing-xl);
+    }
+
+    .card-title {
+      margin: 0 0 var(--spacing-sm);
+      font-size: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .card-subtitle {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: var(--spacing-md);
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 9px 11px;
+      border-radius: var(--radius-field);
+      border: 1px solid var(--border-subtle);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      color: var(--text-main);
+      outline: none;
+      transition:
+        border-color var(--transition-fast),
+        box-shadow var(--transition-fast),
+        background var(--transition-fast),
+        transform var(--transition-fast);
+    }
+
+    .field-input::placeholder {
+      color: rgba(108, 100, 133, 0.6);
+    }
+
+    .field-input:focus-visible {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 1px var(--accent-soft), 0 0 0 1px rgba(255, 255, 255, 0.7);
+      background: #ffffff;
+      transform: translateY(-0.5px);
+    }
+
+    .field-helper {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .primary-button {
+      margin-top: var(--spacing-lg);
+      width: 100%;
+      padding: 11px 14px;
+      border-radius: 999px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent-strong));
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: 550;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 12px 30px rgba(48, 24, 122, 0.35);
+      transition:
+        transform var(--transition-fast),
+        box-shadow var(--transition-fast),
+        filter var(--transition-fast),
+        background-position 220ms ease-out;
+      background-size: 120% 120%;
+    }
+
+    .primary-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 18px 40px rgba(48, 24, 122, 0.45);
+      filter: brightness(1.02);
+      background-position: 0 0;
+    }
+
+    .primary-button:active {
+      transform: translateY(0);
+      box-shadow: 0 10px 26px rgba(48, 24, 122, 0.35);
+      filter: brightness(0.97);
+    }
+
+    .primary-button:focus-visible {
+      outline: 2px solid #ffffff;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 2px var(--accent-soft), 0 12px 30px rgba(48, 24, 122, 0.35);
+    }
+
+    .primary-button.is-loading {
+      opacity: 0.85;
+      cursor: default;
+      box-shadow: 0 10px 24px rgba(48, 24, 122, 0.32);
+      transform: translateY(0);
+    }
+
+    .primary-button-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .primary-button-icon {
+      font-size: 14px;
+    }
+
+    .status {
+      margin-top: var(--spacing-md);
+      min-height: 18px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .status--success {
+      color: var(--success);
+    }
+
+    .status--error {
+      color: var(--error);
+    }
+
+    @keyframes cardEnter {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 16px;
+      }
+
+      .card {
+        padding: 20px 18px 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="card">
+      <div class="card-inner">
+        <header class="card-header">
+          <h2 class="card-title">Connect WordPress to Claude</h2>
+          <p class="card-subtitle">Securely link your WordPress site using an Application Password.</p>
+        </header>
+
+        <form class="form" id="connection-form">
+          <div class="field">
+            <label class="field-label" for="name">Site name</label>
+            <input class="field-input" id="name" name="name" type="text" autocomplete="off" placeholder="e.g. Studio Blog" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="url">Site URL</label>
+            <input class="field-input" id="url" name="url" type="url" inputmode="url" autocomplete="off" placeholder="https://example.com" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="username">WordPress username</label>
+            <input class="field-input" id="username" name="username" type="text" autocomplete="off" placeholder="Your WordPress username" />
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="password">Application password</label>
+            <input class="field-input" id="password" name="password" type="password" autocomplete="new-password" placeholder="WordPress Application Password" />
+            <p class="field-helper">
+              This is a WordPress <strong>Application Password</strong>, not your normal login password.
+            </p>
+          </div>
+
+          <button class="primary-button" type="submit">
+            <span class="primary-button-label">
+              <span>Connect site</span>
+              <span class="primary-button-icon">↗</span>
+            </span>
+          </button>
+        </form>
+
+        <p class="status" id="status"></p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    async function connect() {
+      const name = document.getElementById('name').value;
+      const url = document.getElementById('url').value;
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+
+      const endpoint = url.replace(/\/$/, '') + '/wp-json/mcp/mcp-adapter-default-server';
+
+      const result = await window.connector.connectSite({
+        name: name,
+        endpoint: endpoint,
+        username: username,
+        password: password
+      });
+
+      if (result.success) {
+        const statusElement = document.getElementById('status');
+        statusElement.innerText = "✅ Connected successfully. Restart Claude Desktop.";
+        statusElement.classList.remove('status--error');
+        statusElement.classList.add('status--success');
+      }
+    }
+
+    document.getElementById('connection-form').addEventListener('submit', function (event) {
+      event.preventDefault();
+      connect();
+    });
+  </script>
+
+</body>
+</html>
