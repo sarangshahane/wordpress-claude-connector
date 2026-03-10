@@ -1,0 +1,17 @@
+{
+  "name": "wordpress-claude-connector-desktop",
+  "version": "1.0.0",
+  "description": "Desktop installer to connect Claude Desktop with WordPress via MCP Adapter",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager . wordpress-claude-connector --platform=darwin --arch=x64 --overwrite --icon=assets/icon.icns"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-packager": "^17.1.2"
+  },
+  "dependencies": {
+    "fs-extra": "^11.2.0"
+  }
+}
